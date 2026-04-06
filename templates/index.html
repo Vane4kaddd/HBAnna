@@ -21,7 +21,7 @@
             cursor: crosshair;
         }
 
-        /* Контейнер для падающих эмодзи */
+        
         .falling-container {
             position: fixed;
             top: 0;
@@ -65,7 +65,7 @@
             }
         }
 
-        /* Всплывающее сообщение на месте эмодзи */
+        
         .message-popup {
             position: fixed;
             background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
@@ -100,7 +100,7 @@
             }
         }
 
-        /* Подсказка сверху по центру */
+        
         .hint {
             position: fixed;
             top: 20px;
@@ -121,7 +121,7 @@
             pointer-events: none;
         }
 
-        /* Модальное окошко с приятными словами */
+        
         .words-modal {
             position: fixed;
             top: 50%;
@@ -259,7 +259,7 @@
             border-radius: 4px;
         }
 
-        /* Модальное окно для входа */
+        
         .modal {
             position: fixed;
             top: 0;
@@ -351,7 +351,7 @@
             font-size: 14px;
         }
 
-        /* Боковая панель с замком */
+        
         .lock-panel {
             position: fixed;
             bottom: 30px;
@@ -387,7 +387,7 @@
             opacity: 1;
         }
 
-        /* Секретное модальное окно - в стиле окна входа */
+        
         .secret-modal {
             position: fixed;
             top: 0;
@@ -767,7 +767,7 @@
             emojiInterval = setInterval(createFallingEmoji, 500);
         }
         
-        // Показ секретного модального окна для карты (в стиле окна входа)
+        
         function showSecretModal() {
             if (!isAuthenticated) {
                 showMessageAtPosition('🔐 Сначала нужно войти в систему!', window.innerWidth / 2, window.innerHeight / 2);
@@ -900,7 +900,7 @@
         
         document.getElementById('loginModal').addEventListener('click', (e) => {
             if (e.target === document.getElementById('loginModal')) {
-                // Не закрываем
+                
             }
         });
     </script>
