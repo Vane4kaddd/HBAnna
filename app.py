@@ -92,5 +92,10 @@ def get_random_message():
     message = random.choice(messages)
     return jsonify({"message": message})
 
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'public, max-age=300'
+    return response
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=False, port=5000)
