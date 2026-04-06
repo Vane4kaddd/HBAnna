@@ -3,6 +3,10 @@ from datetime import datetime
 import secrets
 import random
 
+# Оптимизация: кэширование статики
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 86400  # Кэш на 24 часа
+app.config['TEMPLATES_AUTO_RELOAD'] = False  # Отключаем авто-перезагрузку шаблонов
+
 app = Flask(__name__)
 app.secret_key = '1606AnnaSecretKey2026'
 
