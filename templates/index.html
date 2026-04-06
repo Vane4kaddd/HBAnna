@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>С Днём Рождения! 🎂</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #ffd1ff 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            cursor: crosshair;
+        }
+
+        /* Контейнер для падающих эмодзи */
+        .falling-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .falling-emoji {
+            position: absolute;
+            font-size: 40px;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: all 0.1s ease;
+            z-index: 2;
+            filter: drop-shadow(0 0 5px rgba(255,255,255,0.5));
+            animation: fall linear forwards;
+        }
+
+        .falling-emoji:hover {
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.8));
+        }
+
+        .falling-emoji.stopped {
+            animation-play-state: paused;
+            filter: drop-shadow(0 0 20px gold);
+            transform: scale(1.2);
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0.6;
+            }
+        }
+
+        /* Всплывающее сообщение на месте эмодзи */
+        .message-popup {
+            position: fixed;
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 10000;
+            text-align: center;
+            white-space: nowrap;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.5);
+            backdrop-filter: blur(5px);
+            font-family: 'Segoe UI', cursive;
+            letter-spacing: 0.5px;
+            animation: popupIn 0.3s ease-out;
+            pointer-events: none;
+        }
+
+        @keyframes popupIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Подсказка сверху по центру */
+        .hint {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(8px);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 13px;
+            color: rgba(196, 69, 105, 0.7);
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            z-index: 100;
+            white-space: nowrap;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+
+        /* Модальное окошко с приятными словами */
+        .words-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            padding: 35px 30px;
+            width: 550px;
+            min-width: 550px;
+            max-width: 550px;
+            height: 280px;
+            min-height: 280px;
+            max-height: 280px;
+            z-index: 200;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            animation: modalFadeIn 0.5s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        .words-header {
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 24px;
+            color: rgba(196, 69, 105, 0.9);
+            font-weight: bold;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+
+        .words-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex: 1;
+            min-height: 0;
+        }
+
+        .nav-arrow {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(5px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 30px;
+            color: rgba(196, 69, 105, 0.8);
+            transition: all 0.3s;
+            user-select: none;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .nav-arrow:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 0.6);
+            color: rgba(196, 69, 105, 1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .nav-arrow:active {
+            transform: scale(0.95);
+        }
+
+        .word-text {
+            flex: 1;
+            text-align: center;
+            font-size: 22px;
+            line-height: 1.5;
+            color: rgba(196, 69, 105, 0.95);
+            font-weight: 500;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-wrap: break-word;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.3);
+            overflow-y: auto;
+            max-height: 160px;
+            min-height: 120px;
+        }
+
+        .word-text::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .word-text::-webkit-scrollbar-track {
+            background: rgba(196, 69, 105, 0.1);
+            border-radius: 3px;
+        }
+
+        .word-text::-webkit-scrollbar-thumb {
+            background: rgba(196, 69, 105, 0.4);
+            border-radius: 3px;
+        }
+
+        .dots {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 25px;
+            flex-shrink: 0;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(196, 69, 105, 0.3);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background: rgba(196, 69, 105, 0.9);
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        /* Модальное окно для входа */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            padding: 40px;
+            border-radius: 40px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            animation: slideUp 0.3s;
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-content h2 {
+            color: #c44569;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .modal-content p {
+            color: #c44569;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #ffd1ff;
+            border-radius: 30px;
+            margin: 20px 0;
+            text-align: center;
+            letter-spacing: 2px;
+            background: white;
+        }
+
+        .modal-content input:focus {
+            outline: none;
+            border-color: #ff6b9d;
+        }
+
+        .modal-content button {
+            background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-content button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .error-text {
+            color: #c44569;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        /* Боковая панель с замком */
+        .lock-panel {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 100;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 50px;
+            height: 50px;
+        }
+
+        .lock-icon {
+            font-size: 30px;
+            background: transparent;
+            padding: 0;
+            border-radius: 50%;
+            box-shadow: none;
+            transition: all 0.3s;
+            backdrop-filter: none;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            color: #c44569;
+            opacity: 0.7;
+        }
+
+        .lock-icon:hover {
+            transform: scale(1.15);
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            opacity: 1;
+        }
+
+        /* Секретное модальное окно - в стиле окна входа */
+        .secret-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .secret-content {
+            animation: slideUp 0.3s;
+        }
+
+        .secret-content input:focus {
+            outline: none;
+            border-color: #ff6b9d !important;
+            box-shadow: 0 0 10px rgba(255,107,157,0.3) !important;
+        }
+
+        .secret-content button {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        @media (max-width: 768px) {
+            .message-popup {
+                font-size: 11px;
+                padding: 6px 12px;
+                white-space: normal;
+                max-width: 150px;
+                text-align: center;
+                border-radius: 20px;
+            }
+            
+            .falling-emoji {
+                font-size: 30px;
+            }
+            
+            .lock-panel {
+                bottom: 20px;
+                right: 20px;
+                width: 40px;
+                height: 40px;
+            }
+            
+            .lock-icon {
+                font-size: 24px;
+                width: 40px;
+                height: 40px;
+            }
+            
+            .hint {
+                font-size: 11px;
+                padding: 4px 12px;
+                top: 15px;
+            }
+            
+            .words-modal {
+                width: 380px;
+                min-width: 380px;
+                max-width: 380px;
+                height: 300px;
+                min-height: 300px;
+                max-height: 300px;
+                padding: 25px 20px;
+            }
+            
+            .word-text {
+                font-size: 18px;
+                max-height: 150px;
+                min-height: 100px;
+            }
+            
+            .nav-arrow {
+                width: 42px;
+                height: 42px;
+                font-size: 24px;
+            }
+            
+            .words-header {
+                font-size: 20px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="falling-container" id="fallingContainer"></div>
+    
+    <div class="hint">
+        ✨ нажми на эмодзи ✨
+    </div>
+    
+    <div class="words-modal" id="wordsModal">
+        <div class="words-header">
+            💝 С днём рождения 💝
+        </div>
+        <div class="words-content">
+            <div class="nav-arrow" onclick="prevWord()">◀</div>
+            <div class="word-text" id="wordText">
+                Загрузка...
+            </div>
+            <div class="nav-arrow" onclick="nextWord()">▶</div>
+        </div>
+        <div class="dots" id="dotsContainer">
+        </div>
+    </div>
+    
+    <div class="lock-panel" onclick="showSecretModal()">
+        <div class="lock-icon">🔒</div>
+    </div>
+
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <h2>🔐 Секретный вход</h2>
+            <p>Введите уникальный код доступа</p>
+            <input type="text" id="accessCode" placeholder="Введите код" autocomplete="off">
+            <button onclick="verifyCode()">✨ Открыть дверь ✨</button>
+            <div class="error-text" id="loginError"></div>
+        </div>
+    </div>
+
+    <script>
+        let isAuthenticated = false;
+        let currentWordIndex = 0;
+        let wordsList = [];
+        
+        const niceWords = [
+            "Ты — лучик света в моей жизни ☀️",
+            "Твоя улыбка делает мир ярче 🌟",
+            "Спасибо, что ты есть! 💕",
+            "Ты — настоящее сокровище 💎",
+            "Каждый день с тобой — праздник 🎉",
+            "Твоя доброта согревает сердца ❤️",
+            "Ты вдохновляешь меня каждый день ✨",
+            "Ты — самый лучший подарок судьбы 🎁",
+            "С тобой мир становится лучше 🌍",
+            "Твоя энергия заряжает позитивом ⚡",
+            "Ты — моя гордость и радость 🦋",
+            "Ты делаешь невозможное возможным 🌈",
+            "Твоя красота ослепляет 🌹",
+            "Ты — настоящая звезда ⭐",
+            "Твоя мудрость восхищает 📚",
+            "Ты — воплощение нежности 🌸",
+            "Твои объятия — лучшее лекарство 🤗",
+            "Ты умеешь слушать и слышать 👂",
+            "Твоя поддержка бесценна 🤝",
+            "Ты — настоящий друг навсегда 👭"
+        ];
+        
+        function updateWordDisplay() {
+            const wordText = document.getElementById('wordText');
+            const dots = document.querySelectorAll('.dot');
+            
+            if (wordsList.length > 0 && currentWordIndex >= 0 && currentWordIndex < wordsList.length) {
+                wordText.textContent = wordsList[currentWordIndex];
+            }
+            
+            dots.forEach((dot, index) => {
+                if (index === currentWordIndex) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        }
+        
+        function nextWord() {
+            if (wordsList.length > 0) {
+                currentWordIndex = (currentWordIndex + 1) % wordsList.length;
+                updateWordDisplay();
+                animateWordChange();
+            }
+        }
+        
+        function prevWord() {
+            if (wordsList.length > 0) {
+                currentWordIndex = (currentWordIndex - 1 + wordsList.length) % wordsList.length;
+                updateWordDisplay();
+                animateWordChange();
+            }
+        }
+        
+        function animateWordChange() {
+            const wordText = document.getElementById('wordText');
+            wordText.style.animation = 'none';
+            setTimeout(() => {
+                wordText.style.animation = 'popupIn 0.3s ease-out';
+            }, 10);
+            setTimeout(() => {
+                wordText.style.animation = '';
+            }, 300);
+        }
+        
+        function createDots() {
+            const dotsContainer = document.getElementById('dotsContainer');
+            dotsContainer.innerHTML = '';
+            
+            wordsList.forEach((_, index) => {
+                const dot = document.createElement('div');
+                dot.classList.add('dot');
+                if (index === currentWordIndex) {
+                    dot.classList.add('active');
+                }
+                dot.onclick = () => {
+                    currentWordIndex = index;
+                    updateWordDisplay();
+                    animateWordChange();
+                };
+                dotsContainer.appendChild(dot);
+            });
+        }
+        
+        function showWordsModal() {
+            const modal = document.getElementById('wordsModal');
+            modal.style.display = 'flex';
+            modal.style.animation = 'none';
+            setTimeout(() => {
+                modal.style.animation = 'modalFadeIn 0.5s ease-out';
+            }, 10);
+        }
+        
+        const emojis = ['❤️', '🌸', '⭐', '🎈', '🎂', '💝', '🌺', '✨', '🎉', '🦋', '🌷', '🌟', '💕', '🎊', '💖', '🌹'];
+        
+        function createFallingEmoji() {
+            if (!isAuthenticated) return;
+            
+            const emoji = document.createElement('div');
+            emoji.classList.add('falling-emoji');
+            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            emoji.textContent = randomEmoji;
+            emoji.dataset.emoji = randomEmoji;
+            
+            const startX = Math.random() * window.innerWidth;
+            const duration = Math.random() * 6 + 5;
+            const size = Math.random() * 25 + 30;
+            const rotation = Math.random() * 360;
+            
+            emoji.style.left = startX + 'px';
+            emoji.style.fontSize = size + 'px';
+            emoji.style.animationDuration = duration + 's';
+            emoji.style.transform = `rotate(${rotation}deg)`;
+            
+            emoji.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleEmojiClick(emoji);
+            });
+            
+            document.getElementById('fallingContainer').appendChild(emoji);
+            
+            const timeoutId = setTimeout(() => {
+                if (emoji.parentNode) {
+                    emoji.remove();
+                }
+            }, duration * 1000);
+            
+            emoji.dataset.timeoutId = timeoutId;
+        }
+        
+        async function handleEmojiClick(emoji) {
+            if (!isAuthenticated) return;
+            
+            const rect = emoji.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            emoji.classList.add('stopped');
+            
+            if (emoji.dataset.timeoutId) {
+                clearTimeout(parseInt(emoji.dataset.timeoutId));
+            }
+            
+            const emojiType = emoji.dataset.emoji;
+            const response = await fetch(`/api/message?emoji=${encodeURIComponent(emojiType)}`);
+            const data = await response.json();
+            
+            showMessageAtPosition(data.message, centerX, centerY);
+            
+            setTimeout(() => {
+                if (emoji.parentNode) {
+                    emoji.remove();
+                }
+            }, 2000);
+        }
+        
+        function showMessageAtPosition(text, x, y) {
+            const message = document.createElement('div');
+            message.classList.add('message-popup');
+            message.textContent = text;
+            
+            message.style.left = (x - 70) + 'px';
+            message.style.top = (y - 40) + 'px';
+            
+            setTimeout(() => {
+                const messageRect = message.getBoundingClientRect();
+                if (messageRect.left < 0) {
+                    message.style.left = '10px';
+                }
+                if (messageRect.right > window.innerWidth) {
+                    message.style.left = (window.innerWidth - messageRect.width - 10) + 'px';
+                }
+                if (messageRect.top < 0) {
+                    message.style.top = (y + 20) + 'px';
+                }
+                if (messageRect.bottom > window.innerHeight) {
+                    message.style.top = (y - 60) + 'px';
+                }
+            }, 0);
+            
+            document.body.appendChild(message);
+            
+            setTimeout(() => {
+                message.style.animation = 'popupIn 0.2s ease-out reverse';
+                setTimeout(() => {
+                    if (message.parentNode) {
+                        message.remove();
+                    }
+                }, 200);
+            }, 1800);
+        }
+        
+        async function verifyCode() {
+            const code = document.getElementById('accessCode').value;
+            const errorDiv = document.getElementById('loginError');
+            
+            if (!code) {
+                errorDiv.textContent = '❌ Введите код доступа!';
+                return;
+            }
+            
+            const response = await fetch('/verify', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `code=${encodeURIComponent(code)}`
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                isAuthenticated = true;
+                document.getElementById('loginModal').style.display = 'none';
+                startFallingEmojis();
+                showWordsModal();
+            } else {
+                errorDiv.textContent = data.message;
+                const input = document.getElementById('accessCode');
+                input.style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    input.style.animation = '';
+                }, 500);
+            }
+        }
+        
+        let emojiInterval;
+        
+        function startFallingEmojis() {
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => createFallingEmoji(), i * 150);
+            }
+            emojiInterval = setInterval(createFallingEmoji, 500);
+        }
+        
+        // Показ секретного модального окна для карты (в стиле окна входа)
+        function showSecretModal() {
+            if (!isAuthenticated) {
+                showMessageAtPosition('🔐 Сначала нужно войти в систему!', window.innerWidth / 2, window.innerHeight / 2);
+                return;
+            }
+            
+            const modal = document.createElement('div');
+            modal.className = 'secret-modal';
+            modal.innerHTML = `
+                <div class="secret-content" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); border-radius: 40px; padding: 40px; max-width: 400px; width: 90%; text-align: center; border: 2px solid rgba(255,255,255,0.5); box-shadow: 0 20px 40px rgba(0,0,0,0.2);">
+                    <div style="font-size: 60px; margin-bottom: 15px;">🗺️</div>
+                    <div style="font-size: 28px; color: #c44569; margin-bottom: 15px; font-weight: bold;">Карта сокровищ</div>
+                    <p style="color: #c44569; font-size: 16px; margin-bottom: 25px;">
+                        Введите секретный код, чтобы открыть карту
+                    </p>
+                    <input type="text" id="mapCodeInput" placeholder="Спроси у Миши)" autocomplete="off" style="width: 100%; padding: 15px; font-size: 18px; border: 2px solid #ffd1ff; border-radius: 30px; margin: 20px 0; text-align: center; letter-spacing: 2px; background: white; transition: all 0.3s;">
+                    <button onclick="checkMapCode()" style="background: linear-gradient(135deg, #ff6b9d 0%, #c44569 100%); color: white; border: none; padding: 12px 30px; border-radius: 30px; font-size: 18px; cursor: pointer; width: 100%; transition: all 0.3s; margin-bottom: 15px;">🔓 Открыть карту</button>
+                    <div id="mapCodeError" style="color: #c44569; margin-top: 10px; font-size: 14px; text-align: center;"></div>
+                    <button onclick="closeSecretModal(this)" style="background: none; border: 2px solid #ff6b9d; color: #ff6b9d; padding: 10px 20px; border-radius: 30px; cursor: pointer; width: 100%; font-size: 16px; transition: all 0.3s;">Закрыть</button>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            const input = modal.querySelector('#mapCodeInput');
+            input.addEventListener('focus', () => {
+                input.style.borderColor = '#ff6b9d';
+                input.style.outline = 'none';
+                input.style.boxShadow = '0 0 10px rgba(255,107,157,0.3)';
+            });
+            input.addEventListener('blur', () => {
+                input.style.borderColor = '#ffd1ff';
+                input.style.boxShadow = 'none';
+            });
+            
+            const openBtn = modal.querySelector('button[onclick="checkMapCode()"]');
+            openBtn.addEventListener('mouseenter', () => {
+                openBtn.style.transform = 'scale(1.05)';
+                openBtn.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+            });
+            openBtn.addEventListener('mouseleave', () => {
+                openBtn.style.transform = 'scale(1)';
+                openBtn.style.boxShadow = 'none';
+            });
+            
+            const closeBtn = modal.querySelector('button[onclick="closeSecretModal(this)"]');
+            closeBtn.addEventListener('mouseenter', () => {
+                closeBtn.style.transform = 'scale(1.05)';
+                closeBtn.style.background = 'rgba(255,107,157,0.1)';
+            });
+            closeBtn.addEventListener('mouseleave', () => {
+                closeBtn.style.transform = 'scale(1)';
+                closeBtn.style.background = 'none';
+            });
+        }
+
+        async function checkMapCode() {
+            const code = document.getElementById('mapCodeInput').value;
+            const errorDiv = document.getElementById('mapCodeError');
+            
+            if (!code) {
+                errorDiv.textContent = '❌ Введите код доступа!';
+                return;
+            }
+            
+            const response = await fetch('/verify-map', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({code: code})
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                const modal = document.querySelector('.secret-modal');
+                if (modal) modal.remove();
+                window.location.href = '/map';
+            } else {
+                errorDiv.textContent = data.message;
+            }
+        }
+        
+        function closeSecretModal(button) {
+            const modal = button.closest('.secret-modal');
+            if (modal) modal.remove();
+        }
+        
+        function createConfetti() {
+            for (let i = 0; i < 80; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = '-10px';
+                confetti.style.width = Math.random() * 8 + 4 + 'px';
+                confetti.style.height = Math.random() * 8 + 4 + 'px';
+                confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+                confetti.style.zIndex = '9999';
+                confetti.style.pointerEvents = 'none';
+                confetti.style.borderRadius = '50%';
+                confetti.style.animation = `fallConfetti ${Math.random() * 3 + 2}s linear forwards`;
+                document.body.appendChild(confetti);
+                setTimeout(() => confetti.remove(), 5000);
+            }
+        }
+        
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fallConfetti {
+                to {
+                    transform: translateY(100vh) rotate(360deg);
+                    opacity: 0;
+                }
+            }
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-8px); }
+                75% { transform: translateX(8px); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        wordsList = niceWords;
+        currentWordIndex = 0;
+        createDots();
+        updateWordDisplay();
+        
+        document.getElementById('wordsModal').style.display = 'none';
+        document.getElementById('loginModal').style.display = 'flex';
+        
+        document.getElementById('loginModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('loginModal')) {
+                // Не закрываем
+            }
+        });
+    </script>
+</body>
+</html>
