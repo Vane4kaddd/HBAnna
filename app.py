@@ -6,13 +6,10 @@ import random
 app = Flask(__name__)
 app.secret_key = '1606AnnaSecretKey2026'
 
-# Уникальный код доступа
 UNIQUE_CODE = "1606Anna"
 
-# Секретный код для карты (регистр важен!)
-SECRET_MAP_CODE = "LeFleur2026"  # Оставляем как есть, без upper()
+SECRET_MAP_CODE = "LeFleur2026"  
 
-# Короткие комплименты и пожелания для падающих эмодзи
 short_messages = {
     "❤️": [
         "Ты - любовь всей моей жизни! 💕",
@@ -72,12 +69,12 @@ def verify_map():
     if not session.get('authenticated'):
         return jsonify({"error": "Не авторизован"}), 401
     
-    code = request.json.get('code', '').strip()  # Убираем .upper()
+    code = request.json.get('code', '').strip()  
     
     if code == SECRET_MAP_CODE:
         return jsonify({"success": True})
     else:
-        return jsonify({"success": False, "message": "❌ Неверный код! Попробуйте: Le2026"})
+        return jsonify({"success": False, "message": "❌ Неверный код!"})
 
 @app.route('/map')
 def map_page():
