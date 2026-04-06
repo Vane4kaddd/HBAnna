@@ -3,17 +3,6 @@ from datetime import datetime
 import secrets
 import random
 
-# Оптимизация: кэширование статики
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 86400  # Кэш на 24 часа
-app.config['TEMPLATES_AUTO_RELOAD'] = False  # Отключаем авто-перезагрузку шаблонов
-
-# Оптимизация: сжатие ответов
-@app.after_request
-def after_request(response):
-    response.headers['Cache-Control'] = 'public, max-age=3600'
-    response.headers['X-Content-Type-Options'] = 'nosniff'
-    return response
-
 app = Flask(__name__)
 app.secret_key = '1606AnnaSecretKey2026'
 
