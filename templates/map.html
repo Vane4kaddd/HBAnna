@@ -201,7 +201,7 @@
             display: none;
         }
 
-        /* Модальное окно для списка действий - УМЕНЬШЕННОЕ */
+        /* Модальное окно для списка действий */
         .actions-modal {
             position: fixed;
             top: 50%;
@@ -324,7 +324,7 @@
             border-radius: 3px;
         }
 
-        /* Финальное модальное окно - УМЕНЬШЕННОЕ */
+        /* Финальное модальное окно */
         .final-modal {
             position: fixed;
             top: 50%;
@@ -553,20 +553,16 @@
     </style>
 </head>
 <body>
-    <!-- Падающие эмодзи -->
     <div class="falling-container" id="fallingContainer"></div>
     
     <button class="back-button" onclick="goBack()">← Вернуться</button>
     
     <div class="container">
-        <h1>Карта сокровищ</h1>
+        <h1>🗺️ Карта сокровищ 🗺️</h1>
         <div class="subtitle">✨ Выполняй шаг за шагом к своей мечте ✨</div>
         
         <div class="map-container">
-            <!-- Вертикальная версия (мобильные) -->
             <div class="vertical-map" id="verticalMap"></div>
-            
-            <!-- Горизонтальная версия (десктоп) -->
             <div class="horizontal-map" id="horizontalMap"></div>
         </div>
         
@@ -579,12 +575,10 @@
     </div>
 
     <script>
-        // Флаг для предотвращения повторного показа финального окна
         let finalModalShown = false;
         let currentOverlay = null;
         let currentModal = null;
 
-        // Данные шагов
         const steps = [
             { id: 1, name: "Шаг 1" },
             { id: 2, name: "Шаг 2" },
@@ -594,7 +588,6 @@
             { id: 6, name: "ФИНАЛ! 🏆" }
         ];
 
-        // Действия для каждого шага
         const stepsData = {
             1: {
                 title: "❤️ Первый этап",
@@ -643,7 +636,6 @@
             }
         };
 
-        // Финальное поздравление (после 6 шага)
         const finalCongratulations = {
             title: "🎉 ТЫ НАШЛА КЛАД! 🎉",
             message: "Дорогая, ты прошла весь этот путь и заслужила самый главный приз!\n\n" +
@@ -653,10 +645,8 @@
             emoji: "💝"
         };
 
-        // Загрузка сохранённых действий
         let completedActions = JSON.parse(localStorage.getItem('mapCompletedActions') || '{}');
 
-        // Функция для закрытия всех модальных окон
         function closeAllModals() {
             if (currentOverlay) {
                 currentOverlay.remove();
@@ -668,7 +658,6 @@
             }
         }
 
-        // Функция проверки, выполнен ли шаг (все действия отмечены)
         function isStepCompleted(stepId) {
             const actions = stepsData[stepId].actions;
             for (let i = 0; i < actions.length; i++) {
@@ -680,13 +669,11 @@
             return true;
         }
 
-        // Функция проверки, доступен ли шаг (предыдущий выполнен)
         function isStepUnlocked(stepId) {
             if (stepId === 1) return true;
             return isStepCompleted(stepId - 1);
         }
 
-        // Получение статуса шага
         function getStepStatus(stepId) {
             const completed = isStepCompleted(stepId);
             const unlocked = isStepUnlocked(stepId);
@@ -696,7 +683,6 @@
             return 'available';
         }
 
-        // Показ финального поздравления
         function showFinalCongratulations() {
             if (finalModalShown) return;
             finalModalShown = true;
@@ -725,18 +711,15 @@
             document.body.appendChild(modal);
             currentModal = modal;
             
-            // Массовый фейерверк
             for (let i = 0; i < 150; i++) {
                 setTimeout(() => createConfetti(3), i * 15);
             }
         }
 
-        // Закрытие финального модального окна
         function closeFinalModal() {
             closeAllModals();
         }
 
-        // Отрисовка карты
         function renderMap() {
             const verticalContainer = document.getElementById('verticalMap');
             const horizontalContainer = document.getElementById('horizontalMap');
@@ -751,7 +734,6 @@
                 const isCompleted = status === 'completed';
                 const isLocked = status === 'locked';
                 
-                // Вертикальная версия
                 const stepDiv = document.createElement('div');
                 stepDiv.className = 'step-item';
                 
@@ -779,14 +761,12 @@
                 stepDiv.appendChild(nameSpan);
                 verticalContainer.appendChild(stepDiv);
                 
-                // Добавляем пунктирную линию (кроме последнего)
                 if (index < steps.length - 1) {
                     const line = document.createElement('div');
                     line.className = `dotted-line ${!isLocked ? 'active' : ''}`;
                     verticalContainer.appendChild(line);
                 }
                 
-                // Горизонтальная версия
                 const stepDivH = document.createElement('div');
                 stepDivH.className = 'step-item-horizontal';
                 
@@ -814,7 +794,6 @@
                 stepDivH.appendChild(nameSpanH);
                 horizontalContainer.appendChild(stepDivH);
                 
-                // Добавляем горизонтальную пунктирную линию
                 if (index < steps.length - 1) {
                     const lineH = document.createElement('div');
                     lineH.className = `dotted-line-horizontal ${!isLocked ? 'active' : ''}`;
@@ -823,7 +802,6 @@
             });
         }
 
-        // Показ модального окна с действиями
         function showStepActions(stepId) {
             const step = stepsData[stepId];
             if (!step) return;
@@ -884,19 +862,14 @@
                     
                     localStorage.setItem('mapCompletedActions', JSON.stringify(completedActions));
                     
-                    // Проверяем, выполнен ли весь шаг
                     const allCompleted = stepsData[step].actions.every((_, idx) => {
                         return completedActions[`${step}_${idx}`];
                     });
                     
                     if (allCompleted) {
-                        showMessageAtPosition(`🎉 Шаг ${step} завершён! Следующий открыт! 🎉`, window.innerWidth / 2, window.innerHeight / 2);
-                        createConfetti(40);
-                        
-                        // Закрываем текущее модальное окно
+                        // Убрали уведомление о завершении шага
                         closeAllModals();
                         
-                        // ПРОВЕРКА: Если выполнен 6-й шаг, показываем финальное поздравление
                         if (step === 6) {
                             setTimeout(() => {
                                 showFinalCongratulations();
@@ -905,7 +878,7 @@
                     }
                     
                     updateProgress();
-                    renderMap(); // Перерисовываем карту для обновления замков
+                    renderMap();
                 });
             });
         }
@@ -931,7 +904,6 @@
             }
         }
 
-        // Падающие эмодзи
         const emojis = ['❤️', '🌸', '⭐', '🎈', '🎂', '💝', '🌺', '✨', '🎉', '🦋', '🌷', '🌟', '💕', '🎊'];
         
         function createFallingEmoji() {
@@ -1030,13 +1002,11 @@
         `;
         document.head.appendChild(style);
         
-        // Запуск падающих эмодзи
         setInterval(createFallingEmoji, 500);
         for (let i = 0; i < 10; i++) {
             setTimeout(createFallingEmoji, i * 150);
         }
         
-        // Инициализация
         renderMap();
         updateProgress();
     </script>
